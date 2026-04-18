@@ -3,199 +3,388 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wing Chun Daily Quiz</title>
+<title>Wing Chun Quiz</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 1.5rem; min-height: 100vh; }
-  .container { max-width: 640px; margin: 0 auto; }
-  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
-  .top-bar h1 { font-size: 18px; font-weight: 500; color: #1a1a18; }
-  .date-badge { font-size: 12px; color: #888780; }
-  .shuffle-btn { font-size: 13px; border: 0.5px solid #b4b2a9; border-radius: 8px; background: #fff; color: #5f5e5a; padding: 6px 14px; cursor: pointer; }
-  .shuffle-btn:hover { background: #f1efe8; }
-  .section-header { font-size: 12px; font-weight: 500; color: #888780; text-transform: uppercase; letter-spacing: 0.08em; margin: 1.5rem 0 8px; padding-bottom: 6px; border-bottom: 0.5px solid #d3d1c7; }
-  .q-card { background: #fff; border: 0.5px solid #d3d1c7; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 10px; }
-  .q-number { font-size: 11px; color: #b4b2a9; font-weight: 500; margin-bottom: 4px; }
-  .q-prompt { font-size: 16px; font-weight: 500; color: #1a1a18; margin-bottom: 10px; line-height: 1.45; }
-  .reveal-btn { font-size: 13px; border: 0.5px solid #b4b2a9; border-radius: 8px; background: transparent; color: #5f5e5a; padding: 5px 14px; cursor: pointer; }
-  .reveal-btn:hover { background: #f1efe8; }
-  .answer-box { margin-top: 10px; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #1d9e75; background: #f1efe8; }
-  .answer-label { font-size: 11px; font-weight: 500; color: #0f6e56; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
-  .answer-text { font-size: 15px; font-weight: 500; color: #1a1a18; margin-bottom: 2px; }
-  .answer-chinese { font-size: 13px; color: #5f5e5a; }
-  .score-row { display: flex; gap: 8px; margin-top: 10px; }
-  .score-btn { font-size: 12px; border-radius: 8px; padding: 5px 12px; cursor: pointer; border: 0.5px solid #b4b2a9; background: transparent; color: #5f5e5a; }
-  .score-btn.got-it { background: #e1f5ee; color: #0f6e56; border-color: #5dcaa5; }
-  .score-btn.missed { background: #faece7; color: #993c1d; border-color: #f0997b; }
-  .reveal-all-wrap { text-align: center; margin: 1.5rem 0 0.5rem; }
-  .reveal-all-btn { font-size: 13px; border: 0.5px solid #b4b2a9; border-radius: 8px; background: #fff; color: #5f5e5a; padding: 7px 20px; cursor: pointer; }
-  .reveal-all-btn:hover { background: #f1efe8; }
-  .tally { font-size: 13px; color: #5f5e5a; text-align: center; margin-top: 1rem; min-height: 1.5rem; }
-  .tally strong { color: #1a1a18; }
-  .footer { font-size: 11px; color: #b4b2a9; text-align: center; margin-top: 2rem; padding-bottom: 1rem; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; padding: 1.5rem; color: #1a1a18; }
+.wrap { max-width: 620px; margin: 0 auto; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+h1 { font-size: 18px; font-weight: 500; }
+.sub { font-size: 12px; color: #888780; margin-top: 2px; }
+.newbtn { font-size: 13px; border: 1px solid #b4b2a9; border-radius: 8px; background: #fff; color: #5f5e5a; padding: 6px 14px; cursor: pointer; }
+.newbtn:hover { background: #e8e6e0; }
+.sechead { font-size: 11px; font-weight: 600; color: #888780; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid #d3d1c7; }
+.qcard { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; }
+.qnum { font-size: 11px; color: #b4b2a9; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.qprompt { font-size: 16px; font-weight: 500; line-height: 1.45; margin-bottom: 12px; }
+.btnrow { display: flex; gap: 8px; }
+.revbtn, .hintbtn { font-size: 13px; border: 1px solid #b4b2a9; border-radius: 8px; background: transparent; color: #5f5e5a; padding: 6px 14px; cursor: pointer; }
+.revbtn:hover, .hintbtn:hover { background: #f1efe8; }
+.hintbox { display: none; margin-top: 12px; }
+.hintlabel { font-size: 11px; font-weight: 600; color: #888780; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.optrow { display: flex; flex-direction: column; gap: 6px; }
+.optbtn { font-size: 14px; border: 1px solid #b4b2a9; border-radius: 8px; background: #fff; color: #1a1a18; padding: 8px 14px; cursor: pointer; text-align: left; }
+.optbtn:hover:not(:disabled) { background: #f1efe8; }
+.optbtn.selected-correct { background: #e1f5ee; border-color: #5dcaa5; color: #0f6e56; font-weight: 600; }
+.optbtn.selected-wrong { background: #faece7; border-color: #f0997b; color: #993c1d; text-decoration: line-through; }
+.optbtn.revealed-correct { background: #e1f5ee; border-color: #5dcaa5; color: #0f6e56; font-weight: 600; }
+.ansbox { display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #1d9e75; background: #f0faf6; }
+.anslabel { font-size: 11px; font-weight: 600; color: #0f6e56; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+.ansterm { font-size: 15px; font-weight: 600; color: #1a1a18; }
+.scorerow { display: none; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+.scorelabel { font-size: 12px; color: #888780; }
+.gotbtn, .missbtn { font-size: 12px; border-radius: 8px; padding: 5px 12px; cursor: pointer; border: 1px solid #b4b2a9; background: transparent; color: #5f5e5a; }
+.gotbtn.active { background: #e1f5ee; color: #0f6e56; border-color: #5dcaa5; font-weight: 600; }
+.missbtn.active { background: #faece7; color: #993c1d; border-color: #f0997b; font-weight: 600; }
+.tally { font-size: 14px; color: #5f5e5a; text-align: center; margin-top: 1.25rem; min-height: 1.4rem; }
+.tally strong { color: #1a1a18; font-size: 16px; }
+.footer { font-size: 11px; color: #b4b2a9; text-align: center; margin-top: 1.5rem; padding-bottom: 2rem; }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="top-bar">
+<div class="wrap">
+  <div class="topbar">
     <div>
-      <h1>Wing Chun daily quiz</h1>
-      <p class="date-badge" id="today-date"></p>
+      <h1>Wing Chun quiz</h1>
+      <p class="sub">10 techniques — hint/select or reveal answer</p>
     </div>
-    <button class="shuffle-btn" onclick="buildQuiz()">New draw ↺</button>
+    <button class="newbtn" onclick="location.reload()">New draw ↺</button>
   </div>
-
-  <div id="quiz-container"></div>
-
-  <div class="reveal-all-wrap">
-    <button class="reveal-all-btn" onclick="revealAll()">Reveal all answers</button>
+  <p class="sechead">Wing Chun techniques — name each one</p>
+<div class="qcard" id="cardlf0">
+  <p class="qnum">Question 1 of 10</p>
+  <p class="qprompt">Circling/rotating hand — changes position while controlling the attacker's arm; removes obstacles to striking.</p>
+  <div class="btnrow" id="btnrowlf0">
+    <button class="revbtn" onclick="revealAnswer('lf0')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('lf0')">Hint / select</button>
   </div>
+  <div class="hintbox" id="hintlf0">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optslf0">
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf0')">Lan Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'lf0')">Huen Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf0')">Gaan Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="anslf0">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Huen Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">圈手</p>
+  </div>
+  <div class="scorerow" id="scorelf0">
+    <button class="gotbtn" id="gotlf0" onclick="markScore('lf0','got')">&#10003; Got it</button>
+    <button class="missbtn" id="misslf0" onclick="markScore('lf0','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardlf1">
+  <p class="qnum">Question 2 of 10</p>
+  <p class="qprompt">Rotating arms.</p>
+  <div class="btnrow" id="btnrowlf1">
+    <button class="revbtn" onclick="revealAnswer('lf1')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('lf1')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintlf1">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optslf1">
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf1')">Man Geng Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf1')">Bong Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'lf1')">Kwan Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="anslf1">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Kwan Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">綑手</p>
+  </div>
+  <div class="scorerow" id="scorelf1">
+    <button class="gotbtn" id="gotlf1" onclick="markScore('lf1','got')">&#10003; Got it</button>
+    <button class="missbtn" id="misslf1" onclick="markScore('lf1','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardlf2">
+  <p class="qnum">Question 3 of 10</p>
+  <p class="qprompt">Wing arm — deflective technique deployed when other techniques are compromised by a punch crossing the centreline.</p>
+  <div class="btnrow" id="btnrowlf2">
+    <button class="revbtn" onclick="revealAnswer('lf2')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('lf2')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintlf2">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optslf2">
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf2')">Lan Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf2')">Man Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'lf2')">Bong Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="anslf2">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Bong Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">膀手</p>
+  </div>
+  <div class="scorerow" id="scorelf2">
+    <button class="gotbtn" id="gotlf2" onclick="markScore('lf2','got')">&#10003; Got it</button>
+    <button class="missbtn" id="misslf2" onclick="markScore('lf2','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardlf3">
+  <p class="qnum">Question 4 of 10</p>
+  <p class="qprompt">Controlling/bridge-on hand — bridges on opponent's arm; used extensively in Chi Sau as deflection or limb control.</p>
+  <div class="btnrow" id="btnrowlf3">
+    <button class="revbtn" onclick="revealAnswer('lf3')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('lf3')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintlf3">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optslf3">
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf3')">Fak Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf3')">Dai Jeung</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'lf3')">Fook Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="anslf3">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Fook Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">伏手</p>
+  </div>
+  <div class="scorerow" id="scorelf3">
+    <button class="gotbtn" id="gotlf3" onclick="markScore('lf3','got')">&#10003; Got it</button>
+    <button class="missbtn" id="misslf3" onclick="markScore('lf3','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardlf4">
+  <p class="qnum">Question 5 of 10</p>
+  <p class="qprompt">Vertical palm strike.</p>
+  <div class="btnrow" id="btnrowlf4">
+    <button class="revbtn" onclick="revealAnswer('lf4')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('lf4')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintlf4">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optslf4">
+      <button class="optbtn correct" onclick="pickOpt(this,'lf4')">Jing Jeung</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf4')">Dai Bong Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'lf4')">Biu Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="anslf4">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Jing Jeung</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">正掌</p>
+  </div>
+  <div class="scorerow" id="scorelf4">
+    <button class="gotbtn" id="gotlf4" onclick="markScore('lf4','got')">&#10003; Got it</button>
+    <button class="missbtn" id="misslf4" onclick="markScore('lf4','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardot0">
+  <p class="qnum">Question 6 of 10</p>
+  <p class="qprompt">Plowing hand / downward block</p>
+  <div class="btnrow" id="btnrowot0">
+    <button class="revbtn" onclick="revealAnswer('ot0')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('ot0')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintot0">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsot0">
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot0')">Lau Sao</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'ot0')">Gaun Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot0')">Gum Jahng</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansot0">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Gaun Sao</p>
+    
+  </div>
+  <div class="scorerow" id="scoreot0">
+    <button class="gotbtn" id="gotot0" onclick="markScore('ot0','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missot0" onclick="markScore('ot0','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardot1">
+  <p class="qnum">Question 7 of 10</p>
+  <p class="qprompt">Jerking hand</p>
+  <div class="btnrow" id="btnrowot1">
+    <button class="revbtn" onclick="revealAnswer('ot1')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('ot1')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintot1">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsot1">
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot1')">Lan Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot1')">Jip Sao</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'ot1')">Jut Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansot1">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Jut Sau</p>
+    
+  </div>
+  <div class="scorerow" id="scoreot1">
+    <button class="gotbtn" id="gotot1" onclick="markScore('ot1','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missot1" onclick="markScore('ot1','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardot2">
+  <p class="qnum">Question 8 of 10</p>
+  <p class="qprompt">Pulling hands</p>
+  <div class="btnrow" id="btnrowot2">
+    <button class="revbtn" onclick="revealAnswer('ot2')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('ot2')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintot2">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsot2">
+      <button class="optbtn correct" onclick="pickOpt(this,'ot2')">Tok Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot2')">Pak Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot2')">Dui Ma</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansot2">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Tok Sao</p>
+    
+  </div>
+  <div class="scorerow" id="scoreot2">
+    <button class="gotbtn" id="gotot2" onclick="markScore('ot2','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missot2" onclick="markScore('ot2','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardot3">
+  <p class="qnum">Question 9 of 10</p>
+  <p class="qprompt">Retracting waist elbow strike</p>
+  <div class="btnrow" id="btnrowot3">
+    <button class="revbtn" onclick="revealAnswer('ot3')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('ot3')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintot3">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsot3">
+      <button class="optbtn correct" onclick="pickOpt(this,'ot3')">Sao Jahng</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot3')">Gum Jahng</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot3')">Bil Jee Sao</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansot3">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Sao Jahng</p>
+    
+  </div>
+  <div class="scorerow" id="scoreot3">
+    <button class="gotbtn" id="gotot3" onclick="markScore('ot3','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missot3" onclick="markScore('ot3','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardot4">
+  <p class="qnum">Question 10 of 10</p>
+  <p class="qprompt">Large circle hand</p>
+  <div class="btnrow" id="btnrowot4">
+    <button class="revbtn" onclick="revealAnswer('ot4')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('ot4')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintot4">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsot4">
+      <button class="optbtn correct" onclick="pickOpt(this,'ot4')">Lau Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot4')">Jut Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'ot4')">Jip Sao</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansot4">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Lau Sao</p>
+    
+  </div>
+  <div class="scorerow" id="scoreot4">
+    <button class="gotbtn" id="gotot4" onclick="markScore('ot4','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missot4" onclick="markScore('ot4','miss')">&#10007; Missed</button>
+  </div>
+</div>
+
   <p class="tally" id="tally"></p>
-  <p class="footer">5 long form · 5 other techniques · shuffled daily</p>
+  <p class="footer">Wing Chun daily quiz</p>
 </div>
 
 <script>
-const longForm = [
-  { term: "Man Sau", chinese: "問手", desc: "Inquisitive arm — forms the ready state with Wu Sau; used to gain contact, block or deflect." },
-  { term: "Man Geng Sau", chinese: "問勁手", desc: "Neck pulling hand." },
-  { term: "Kau Sau", chinese: "扣手", desc: "Scooping hand." },
-  { term: "Kwan Sau", chinese: "綑手", desc: "Rotating arms." },
-  { term: "Lap Sau", chinese: "拉手", desc: "Deflective/pulling arm — destroys opponent's balance with a short sharp pull, typically paired with a simultaneous strike." },
-  { term: "Lan Sau", chinese: "拦手", desc: "Bar arm — lifting block/bridging technique with forearm level with the shoulders." },
-  { term: "Huen Sau", chinese: "圈手", desc: "Circling/rotating hand — changes position while controlling the attacker's arm; removes obstacles to striking." },
-  { term: "Jeung Sau", chinese: "掌手", desc: "Changing arms." },
-  { term: "Jing Jeung", chinese: "正掌", desc: "Vertical palm strike." },
-  { term: "Dai Bong Sau", chinese: "低膀手", desc: "Low wing arm — Bong Sau applied lower to cover the mid/low-gate." },
-  { term: "Dai Jeung", chinese: "底掌", desc: "Low palm strike — follows Taan Sau and Huen Sau in section 3; strikes the lower ribs." },
-  { term: "Dai Kuen", chinese: "底拳", desc: "Low punch — used in the Wooden Dummy form; straight punch to the trunk of the dummy." },
-  { term: "Fak Sau", chinese: "拂手", desc: "Whisking arm — chop technique usable as block or strike, especially against opponents to the side." },
-  { term: "Fook Sau", chinese: "伏手", desc: "Controlling/bridge-on hand — bridges on opponent's arm; used extensively in Chi Sau as deflection or limb control." },
-  { term: "Gaan Sau", chinese: "耕手", desc: "Low block/splitting arm — blocks attacks to the mid section." },
-  { term: "Gum Sau", chinese: "撳手", desc: "Pinning hand — blocks or pins opponent's arm; often used in Chi Sao." },
-  { term: "Biu Sau", chinese: "镖手", desc: "Thrusting hand — deflects attacks at shoulder height or above; can strike eyes and throat." },
-  { term: "Bong Sau", chinese: "膀手", desc: "Wing arm — deflective technique deployed when other techniques are compromised by a punch crossing the centreline." },
-];
+var scores = {};
 
-const other = [
-  { cat: "Hand technique", term: "Wu Sao", desc: "Protective hand" },
-  { cat: "Hand technique", term: "Tan Sao", desc: "Spread hand" },
-  { cat: "Hand technique", term: "Pak Sao", desc: "Slapping palm" },
-  { cat: "Hand technique", term: "Lop Sao", desc: "Grab" },
-  { cat: "Hand technique", term: "Bong Sao", desc: "Crane wing deflection" },
-  { cat: "Hand technique", term: "Fuk Sao", desc: "Hooking hand" },
-  { cat: "Hand technique", term: "Jut Sau", desc: "Jerking hand" },
-  { cat: "Hand technique", term: "Kuen Sao", desc: "Fist / punch" },
-  { cat: "Hand technique", term: "Jip Sao", desc: "Folding hand" },
-  { cat: "Hand technique", term: "Tai Sao", desc: "Rising hands" },
-  { cat: "Hand technique", term: "Jung Sao", desc: "Downward chop" },
-  { cat: "Hand technique", term: "Man Sao", desc: "Seeking hand / ask the way" },
-  { cat: "Hand technique", term: "Gum Sao", desc: "Pinning / pressing hand" },
-  { cat: "Hand technique", term: "Huen Sao", desc: "Small circle block" },
-  { cat: "Hand technique", term: "Lau Sao", desc: "Large circle hand" },
-  { cat: "Hand technique", term: "Lan Sao", desc: "Bannister arm" },
-  { cat: "Hand technique", term: "Gaun Sao", desc: "Plowing hand / downward block" },
-  { cat: "Hand technique", term: "Tok Sao", desc: "Pulling hands" },
-  { cat: "Hand technique", term: "Bil Jee Sao", desc: "Thrusting fingers" },
-  { cat: "Hand technique", term: "Lin Wan Kuen", desc: "Circle punches" },
-  { cat: "Hand technique", term: "Yut Fook Yee", desc: "One hand trapping two" },
-  { cat: "Elbow technique", term: "Pai Jahng", desc: "Hacking elbow" },
-  { cat: "Elbow technique", term: "Dai Jahng", desc: "Downward elbow" },
-  { cat: "Elbow technique", term: "Gum Jahng", desc: "Pressing elbow" },
-  { cat: "Elbow technique", term: "Sao Jahng", desc: "Retracting waist elbow strike" },
-  { cat: "Stance", term: "Yee Jee Ku Yeung Ma", desc: "Goat restraining stance" },
-  { cat: "Stance", term: "Sei Ping Ma", desc: "Horse stance" },
-  { cat: "Stance", term: "Dui Ma", desc: "Cat stance" },
-  { cat: "Stance", term: "Chun Ma", desc: "Triangle / back stance (60-40)" },
-];
+function showHint(uid) {
+  document.getElementById('btnrow' + uid).style.display = 'none';
+  document.getElementById('hint' + uid).style.display = 'block';
+}
 
-let scores = {};
+function pickOpt(btn, uid) {
+  var allBtns = document.getElementById('opts' + uid).querySelectorAll('.optbtn');
+  allBtns.forEach(function(b) { b.disabled = true; });
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  var correct = btn.classList.contains('correct');
+
+  if (correct) {
+    btn.classList.add('selected-correct');
+    autoScore(uid, 'got');
+  } else {
+    btn.classList.add('selected-wrong');
+    allBtns.forEach(function(b) {
+      if (b.classList.contains('correct')) b.classList.add('selected-correct');
+    });
+    autoScore(uid, 'miss');
   }
-  return a;
-}
 
-function pick(arr, n) { return shuffle(arr).slice(0, n); }
-
-function buildQuiz() {
-  scores = {};
-  document.getElementById('tally').textContent = '';
-  const lf = pick(longForm, 5);
-  const ot = pick(other, 5);
-  const container = document.getElementById('quiz-container');
-  let html = '<p class="section-header">Long form — name the technique</p>';
-
-  lf.forEach((q, i) => {
-    const id = 'lf' + i;
-    html += cardHTML(id, 'Long form ' + (i+1) + ' of 5', q.desc, q.term, q.chinese);
+  // Show answer box after selection
+  document.getElementById('ans' + uid).style.display = 'block';
+  // Hide wrong options
+  allBtns.forEach(function(b) {
+    if (b.classList.contains('wrong') && !b.classList.contains('selected-wrong')) {
+      b.style.display = 'none';
+    }
   });
-
-  html += '<p class="section-header">Other techniques — name the technique</p>';
-  ot.forEach((q, i) => {
-    const id = 'ot' + i;
-    html += cardHTML(id, q.cat + ' — ' + (i+1) + ' of 5', q.desc, q.term, null);
-  });
-
-  container.innerHTML = html;
+  // Show score row (already auto-marked, but allow override)
+  var scorerow = document.getElementById('score' + uid);
+  scorerow.style.display = 'flex';
 }
 
-function cardHTML(id, label, prompt, answer, chinese) {
-  const chineseHTML = chinese ? '<p class="answer-chinese">' + chinese + '</p>' : '';
-  return `<div class="q-card">
-    <p class="q-number">${label}</p>
-    <p class="q-prompt">${prompt}</p>
-    <button class="reveal-btn" id="btn-${id}" onclick="reveal('${id}')">Reveal answer</button>
-    <div id="${id}" style="display:none">
-      <div class="answer-box">
-        <p class="answer-label">answer</p>
-        <p class="answer-text">${answer}</p>
-        ${chineseHTML}
-      </div>
-      <div class="score-row">
-        <button class="score-btn" id="${id}-got" onclick="markScore('${id}','got')">✓ Got it</button>
-        <button class="score-btn" id="${id}-miss" onclick="markScore('${id}','miss')">✗ Missed</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function reveal(id) {
-  document.getElementById(id).style.display = 'block';
-  const btn = document.getElementById('btn-' + id);
-  if (btn) btn.style.display = 'none';
-}
-
-function revealAll() {
-  document.querySelectorAll('.reveal-btn').forEach(btn => { btn.style.display = 'none'; });
-  document.querySelectorAll('.q-card > div[id]').forEach(el => { el.style.display = 'block'; });
-}
-
-function markScore(id, result) {
-  scores[id] = result;
-  const got = document.getElementById(id + '-got');
-  const miss = document.getElementById(id + '-miss');
-  got.className = 'score-btn' + (result === 'got' ? ' got-it' : '');
-  miss.className = 'score-btn' + (result === 'miss' ? ' missed' : '');
+function autoScore(uid, result) {
+  scores[uid] = result;
+  var got = document.getElementById('got' + uid);
+  var miss = document.getElementById('miss' + uid);
+  got.className = 'gotbtn' + (result === 'got' ? ' active' : '');
+  miss.className = 'missbtn' + (result === 'miss' ? ' active' : '');
   updateTally();
 }
 
-function updateTally() {
-  const vals = Object.values(scores);
-  if (!vals.length) return;
-  const got = vals.filter(v => v === 'got').length;
-  document.getElementById('tally').innerHTML = 'Score so far: <strong>' + got + ' / ' + vals.length + '</strong> marked';
+function markScore(uid, result) {
+  autoScore(uid, result);
 }
 
-const now = new Date();
-document.getElementById('today-date').textContent = now.toLocaleDateString('en-GB', {
-  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-});
+function revealAnswer(uid) {
+  document.getElementById('btnrow' + uid).style.display = 'none';
+  document.getElementById('ans' + uid).style.display = 'block';
+  var scorerow = document.getElementById('score' + uid);
+  scorerow.style.display = 'flex';
+  // If hint was open, tidy it up
+  var opts = document.getElementById('opts' + uid);
+  if (opts) {
+    opts.querySelectorAll('.wrong').forEach(function(b) { b.style.display = 'none'; });
+    opts.querySelectorAll('.correct').forEach(function(b) {
+      b.classList.add('revealed-correct');
+      b.disabled = true;
+    });
+    document.getElementById('hint' + uid).style.display = 'block';
+  }
+}
 
-buildQuiz();
+function updateTally() {
+  var vals = Object.values(scores);
+  if (!vals.length) return;
+  var got = vals.filter(function(v) { return v === 'got'; }).length;
+  var total = vals.length;
+  var msg = 'Score: <strong>' + got + ' / ' + total + '</strong>';
+  if (total === 10) {
+    msg += ' &nbsp;—&nbsp; ' + (got === 10 ? 'Perfect!' : got >= 8 ? 'Great work.' : got >= 6 ? 'Good effort.' : 'Keep practising.');
+  }
+  document.getElementById('tally').innerHTML = msg;
+}
 </script>
 </body>
 </html>
