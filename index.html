@@ -8,12 +8,20 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; padding: 1.5rem; color: #1a1a18; }
 .wrap { max-width: 620px; margin: 0 auto; }
-.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; }
 h1 { font-size: 18px; font-weight: 500; }
 .sub { font-size: 12px; color: #888780; margin-top: 2px; }
-.newbtn { font-size: 13px; border: 1px solid #b4b2a9; border-radius: 8px; background: #fff; color: #5f5e5a; padding: 6px 14px; cursor: pointer; }
+.topbtns { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+.newbtn { font-size: 13px; border: 1px solid #b4b2a9; border-radius: 8px; background: #fff; color: #5f5e5a; padding: 6px 14px; cursor: pointer; white-space: nowrap; }
 .newbtn:hover { background: #e8e6e0; }
+.levelbtns { display: flex; gap: 6px; }
+.lvlbtn { font-size: 12px; border: 1px solid #b4b2a9; border-radius: 8px; background: #fff; color: #5f5e5a; padding: 5px 12px; cursor: pointer; white-space: nowrap; }
+.lvlbtn:hover { background: #e8e6e0; }
+.lvlbtn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
 .sechead { font-size: 11px; font-weight: 600; color: #888780; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid #d3d1c7; }
+.level-badge { display: inline-block; font-size: 11px; font-weight: 600; color: #fff; border-radius: 6px; padding: 2px 8px; margin-bottom: 12px; }
+.badge-l1 { background: #3b6d11; }
+.badge-l2 { background: #185fa5; }
 .qcard { background: #fff; border: 1px solid #d3d1c7; border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; }
 .qnum { font-size: 11px; color: #b4b2a9; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
 .qprompt { font-size: 16px; font-weight: 500; line-height: 1.45; margin-bottom: 12px; }
@@ -31,8 +39,7 @@ h1 { font-size: 18px; font-weight: 500; }
 .ansbox { display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #1d9e75; background: #f0faf6; }
 .anslabel { font-size: 11px; font-weight: 600; color: #0f6e56; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
 .ansterm { font-size: 15px; font-weight: 600; color: #1a1a18; }
-.scorerow { display: none; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
-.scorelabel { font-size: 12px; color: #888780; }
+.scorerow { display: none; gap: 8px; margin-top: 10px; }
 .gotbtn, .missbtn { font-size: 12px; border-radius: 8px; padding: 5px 12px; cursor: pointer; border: 1px solid #b4b2a9; background: transparent; color: #5f5e5a; }
 .gotbtn.active { background: #e1f5ee; color: #0f6e56; border-color: #5dcaa5; font-weight: 600; }
 .missbtn.active { background: #faece7; color: #993c1d; border-color: #f0997b; font-weight: 600; }
@@ -46,261 +53,528 @@ h1 { font-size: 18px; font-weight: 500; }
   <div class="topbar">
     <div>
       <h1>Wing Chun quiz</h1>
-      <p class="sub">10 techniques — hint/select or reveal answer</p>
+      <p class="sub" id="subdesc">10 techniques — hint/select or reveal answer</p>
     </div>
-    <button class="newbtn" onclick="location.reload()">New draw ↺</button>
+    <div class="topbtns">
+      <button class="newbtn" onclick="location.reload()">New draw ↺</button>
+      <div class="levelbtns">
+        <button class="lvlbtn active" id="btn-l1" onclick="setLevel(1)">Level 1</button>
+        <button class="lvlbtn" id="btn-l2" onclick="setLevel(2)">Level 2</button>
+      </div>
+    </div>
   </div>
-  <p class="sechead">Wing Chun techniques — name each one</p>
-<div class="qcard" id="cardlf0">
+
+  <div id="quiz-l1">
+    <span class="level-badge badge-l1">Level 1</span>
+    <p class="sechead">Wing Chun techniques — name each one</p>
+<div class="qcard" id="cardalf0">
   <p class="qnum">Question 1 of 10</p>
-  <p class="qprompt">Circling/rotating hand — changes position while controlling the attacker's arm; removes obstacles to striking.</p>
-  <div class="btnrow" id="btnrowlf0">
-    <button class="revbtn" onclick="revealAnswer('lf0')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('lf0')">Hint / select</button>
+  <p class="qprompt">Inquisitive arm — forms the ready state with Wu Sau; used to gain contact, block or deflect.</p>
+  <div class="btnrow" id="btnrowalf0">
+    <button class="revbtn" onclick="revealAnswer('alf0')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('alf0')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintlf0">
+  <div class="hintbox" id="hintalf0">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optslf0">
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf0')">Lan Sau</button>
-      <button class="optbtn correct" onclick="pickOpt(this,'lf0')">Huen Sau</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf0')">Gaan Sau</button>
+    <div class="optrow" id="optsalf0">
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf0')">Fak Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf0')">Biu Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'alf0')">Man Sau</button>
     </div>
   </div>
-  <div class="ansbox" id="anslf0">
+  <div class="ansbox" id="ansalf0">
     <p class="anslabel">Answer</p>
-    <p class="ansterm">Huen Sau</p>
-    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">圈手</p>
+    <p class="ansterm">Man Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">問手</p>
   </div>
-  <div class="scorerow" id="scorelf0">
-    <button class="gotbtn" id="gotlf0" onclick="markScore('lf0','got')">&#10003; Got it</button>
-    <button class="missbtn" id="misslf0" onclick="markScore('lf0','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorealf0">
+    <button class="gotbtn" id="gotalf0" onclick="markScore('alf0','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missalf0" onclick="markScore('alf0','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardlf1">
+<div class="qcard" id="cardalf1">
   <p class="qnum">Question 2 of 10</p>
-  <p class="qprompt">Rotating arms.</p>
-  <div class="btnrow" id="btnrowlf1">
-    <button class="revbtn" onclick="revealAnswer('lf1')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('lf1')">Hint / select</button>
+  <p class="qprompt">Scooping hand.</p>
+  <div class="btnrow" id="btnrowalf1">
+    <button class="revbtn" onclick="revealAnswer('alf1')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('alf1')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintlf1">
+  <div class="hintbox" id="hintalf1">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optslf1">
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf1')">Man Geng Sau</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf1')">Bong Sau</button>
-      <button class="optbtn correct" onclick="pickOpt(this,'lf1')">Kwan Sau</button>
+    <div class="optrow" id="optsalf1">
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf1')">Gum Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf1')">Jeung Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'alf1')">Kau Sau</button>
     </div>
   </div>
-  <div class="ansbox" id="anslf1">
+  <div class="ansbox" id="ansalf1">
     <p class="anslabel">Answer</p>
-    <p class="ansterm">Kwan Sau</p>
-    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">綑手</p>
+    <p class="ansterm">Kau Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">扣手</p>
   </div>
-  <div class="scorerow" id="scorelf1">
-    <button class="gotbtn" id="gotlf1" onclick="markScore('lf1','got')">&#10003; Got it</button>
-    <button class="missbtn" id="misslf1" onclick="markScore('lf1','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorealf1">
+    <button class="gotbtn" id="gotalf1" onclick="markScore('alf1','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missalf1" onclick="markScore('alf1','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardlf2">
+<div class="qcard" id="cardalf2">
   <p class="qnum">Question 3 of 10</p>
   <p class="qprompt">Wing arm — deflective technique deployed when other techniques are compromised by a punch crossing the centreline.</p>
-  <div class="btnrow" id="btnrowlf2">
-    <button class="revbtn" onclick="revealAnswer('lf2')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('lf2')">Hint / select</button>
+  <div class="btnrow" id="btnrowalf2">
+    <button class="revbtn" onclick="revealAnswer('alf2')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('alf2')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintlf2">
+  <div class="hintbox" id="hintalf2">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optslf2">
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf2')">Lan Sau</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf2')">Man Sau</button>
-      <button class="optbtn correct" onclick="pickOpt(this,'lf2')">Bong Sau</button>
+    <div class="optrow" id="optsalf2">
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf2')">Fook Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'alf2')">Bong Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf2')">Jing Jeung</button>
     </div>
   </div>
-  <div class="ansbox" id="anslf2">
+  <div class="ansbox" id="ansalf2">
     <p class="anslabel">Answer</p>
     <p class="ansterm">Bong Sau</p>
     <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">膀手</p>
   </div>
-  <div class="scorerow" id="scorelf2">
-    <button class="gotbtn" id="gotlf2" onclick="markScore('lf2','got')">&#10003; Got it</button>
-    <button class="missbtn" id="misslf2" onclick="markScore('lf2','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorealf2">
+    <button class="gotbtn" id="gotalf2" onclick="markScore('alf2','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missalf2" onclick="markScore('alf2','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardlf3">
+<div class="qcard" id="cardalf3">
   <p class="qnum">Question 4 of 10</p>
-  <p class="qprompt">Controlling/bridge-on hand — bridges on opponent's arm; used extensively in Chi Sau as deflection or limb control.</p>
-  <div class="btnrow" id="btnrowlf3">
-    <button class="revbtn" onclick="revealAnswer('lf3')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('lf3')">Hint / select</button>
+  <p class="qprompt">Low wing arm — Bong Sau applied lower to cover the mid/low-gate.</p>
+  <div class="btnrow" id="btnrowalf3">
+    <button class="revbtn" onclick="revealAnswer('alf3')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('alf3')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintlf3">
+  <div class="hintbox" id="hintalf3">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optslf3">
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf3')">Fak Sau</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf3')">Dai Jeung</button>
-      <button class="optbtn correct" onclick="pickOpt(this,'lf3')">Fook Sau</button>
+    <div class="optrow" id="optsalf3">
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf3')">Gum Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf3')">Man Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'alf3')">Dai Bong Sau</button>
     </div>
   </div>
-  <div class="ansbox" id="anslf3">
+  <div class="ansbox" id="ansalf3">
     <p class="anslabel">Answer</p>
-    <p class="ansterm">Fook Sau</p>
-    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">伏手</p>
+    <p class="ansterm">Dai Bong Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">低膀手</p>
   </div>
-  <div class="scorerow" id="scorelf3">
-    <button class="gotbtn" id="gotlf3" onclick="markScore('lf3','got')">&#10003; Got it</button>
-    <button class="missbtn" id="misslf3" onclick="markScore('lf3','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorealf3">
+    <button class="gotbtn" id="gotalf3" onclick="markScore('alf3','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missalf3" onclick="markScore('alf3','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardlf4">
+<div class="qcard" id="cardalf4">
   <p class="qnum">Question 5 of 10</p>
-  <p class="qprompt">Vertical palm strike.</p>
-  <div class="btnrow" id="btnrowlf4">
-    <button class="revbtn" onclick="revealAnswer('lf4')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('lf4')">Hint / select</button>
+  <p class="qprompt">Low palm strike — follows Taan Sau and Huen Sau in section 3; strikes the lower ribs.</p>
+  <div class="btnrow" id="btnrowalf4">
+    <button class="revbtn" onclick="revealAnswer('alf4')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('alf4')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintlf4">
+  <div class="hintbox" id="hintalf4">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optslf4">
-      <button class="optbtn correct" onclick="pickOpt(this,'lf4')">Jing Jeung</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf4')">Dai Bong Sau</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'lf4')">Biu Sau</button>
+    <div class="optrow" id="optsalf4">
+      <button class="optbtn correct" onclick="pickOpt(this,'alf4')">Dai Jeung</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf4')">Fak Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'alf4')">Kau Sau</button>
     </div>
   </div>
-  <div class="ansbox" id="anslf4">
+  <div class="ansbox" id="ansalf4">
     <p class="anslabel">Answer</p>
-    <p class="ansterm">Jing Jeung</p>
-    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">正掌</p>
+    <p class="ansterm">Dai Jeung</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">底掌</p>
   </div>
-  <div class="scorerow" id="scorelf4">
-    <button class="gotbtn" id="gotlf4" onclick="markScore('lf4','got')">&#10003; Got it</button>
-    <button class="missbtn" id="misslf4" onclick="markScore('lf4','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorealf4">
+    <button class="gotbtn" id="gotalf4" onclick="markScore('alf4','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missalf4" onclick="markScore('alf4','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardot0">
+<div class="qcard" id="cardaot0">
   <p class="qnum">Question 6 of 10</p>
-  <p class="qprompt">Plowing hand / downward block</p>
-  <div class="btnrow" id="btnrowot0">
-    <button class="revbtn" onclick="revealAnswer('ot0')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('ot0')">Hint / select</button>
+  <p class="qprompt">Folding hand</p>
+  <div class="btnrow" id="btnrowaot0">
+    <button class="revbtn" onclick="revealAnswer('aot0')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('aot0')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintot0">
+  <div class="hintbox" id="hintaot0">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optsot0">
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot0')">Lau Sao</button>
-      <button class="optbtn correct" onclick="pickOpt(this,'ot0')">Gaun Sao</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot0')">Gum Jahng</button>
+    <div class="optrow" id="optsaot0">
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot0')">Tok Sao</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'aot0')">Jip Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot0')">Kuen Sao</button>
     </div>
   </div>
-  <div class="ansbox" id="ansot0">
+  <div class="ansbox" id="ansaot0">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Jip Sao</p>
+    
+  </div>
+  <div class="scorerow" id="scoreaot0">
+    <button class="gotbtn" id="gotaot0" onclick="markScore('aot0','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missaot0" onclick="markScore('aot0','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardaot1">
+  <p class="qnum">Question 7 of 10</p>
+  <p class="qprompt">Seeking hand / ask the way</p>
+  <div class="btnrow" id="btnrowaot1">
+    <button class="revbtn" onclick="revealAnswer('aot1')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('aot1')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintaot1">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsaot1">
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot1')">Pai Jahng</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot1')">Sei Ping Ma</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'aot1')">Man Sao</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansaot1">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Man Sao</p>
+    
+  </div>
+  <div class="scorerow" id="scoreaot1">
+    <button class="gotbtn" id="gotaot1" onclick="markScore('aot1','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missaot1" onclick="markScore('aot1','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardaot2">
+  <p class="qnum">Question 8 of 10</p>
+  <p class="qprompt">Plowing hand / downward block</p>
+  <div class="btnrow" id="btnrowaot2">
+    <button class="revbtn" onclick="revealAnswer('aot2')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('aot2')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintaot2">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsaot2">
+      <button class="optbtn correct" onclick="pickOpt(this,'aot2')">Gaun Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot2')">Yee Jee Ku Yeung Ma</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot2')">Bil Jee Sao</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansaot2">
     <p class="anslabel">Answer</p>
     <p class="ansterm">Gaun Sao</p>
     
   </div>
-  <div class="scorerow" id="scoreot0">
-    <button class="gotbtn" id="gotot0" onclick="markScore('ot0','got')">&#10003; Got it</button>
-    <button class="missbtn" id="missot0" onclick="markScore('ot0','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scoreaot2">
+    <button class="gotbtn" id="gotaot2" onclick="markScore('aot2','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missaot2" onclick="markScore('aot2','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardot1">
-  <p class="qnum">Question 7 of 10</p>
-  <p class="qprompt">Jerking hand</p>
-  <div class="btnrow" id="btnrowot1">
-    <button class="revbtn" onclick="revealAnswer('ot1')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('ot1')">Hint / select</button>
+<div class="qcard" id="cardaot3">
+  <p class="qnum">Question 9 of 10</p>
+  <p class="qprompt">Fist / punch</p>
+  <div class="btnrow" id="btnrowaot3">
+    <button class="revbtn" onclick="revealAnswer('aot3')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('aot3')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintot1">
+  <div class="hintbox" id="hintaot3">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optsot1">
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot1')">Lan Sao</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot1')">Jip Sao</button>
-      <button class="optbtn correct" onclick="pickOpt(this,'ot1')">Jut Sau</button>
+    <div class="optrow" id="optsaot3">
+      <button class="optbtn correct" onclick="pickOpt(this,'aot3')">Kuen Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot3')">Bong Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot3')">Wu Sao</button>
     </div>
   </div>
-  <div class="ansbox" id="ansot1">
+  <div class="ansbox" id="ansaot3">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Kuen Sao</p>
+    
+  </div>
+  <div class="scorerow" id="scoreaot3">
+    <button class="gotbtn" id="gotaot3" onclick="markScore('aot3','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missaot3" onclick="markScore('aot3','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardaot4">
+  <p class="qnum">Question 10 of 10</p>
+  <p class="qprompt">Jerking hand</p>
+  <div class="btnrow" id="btnrowaot4">
+    <button class="revbtn" onclick="revealAnswer('aot4')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('aot4')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintaot4">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsaot4">
+      <button class="optbtn correct" onclick="pickOpt(this,'aot4')">Jut Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot4')">Jung Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'aot4')">Tok Sao</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansaot4">
     <p class="anslabel">Answer</p>
     <p class="ansterm">Jut Sau</p>
     
   </div>
-  <div class="scorerow" id="scoreot1">
-    <button class="gotbtn" id="gotot1" onclick="markScore('ot1','got')">&#10003; Got it</button>
-    <button class="missbtn" id="missot1" onclick="markScore('ot1','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scoreaot4">
+    <button class="gotbtn" id="gotaot4" onclick="markScore('aot4','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missaot4" onclick="markScore('aot4','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardot2">
+
+  </div>
+
+  <div id="quiz-l2" style="display:none;">
+    <span class="level-badge badge-l2">Level 2</span>
+    <p class="sechead">Wing Chun techniques — name each one</p>
+<div class="qcard" id="cardblf0">
+  <p class="qnum">Question 1 of 10</p>
+  <p class="qprompt">Deflective/pulling arm — destroys opponent's balance with a short sharp pull, typically paired with a simultaneous strike.</p>
+  <div class="btnrow" id="btnrowblf0">
+    <button class="revbtn" onclick="revealAnswer('blf0')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('blf0')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintblf0">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsblf0">
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf0')">Biu Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'blf0')">Lap Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf0')">Kau Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansblf0">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Lap Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">拉手</p>
+  </div>
+  <div class="scorerow" id="scoreblf0">
+    <button class="gotbtn" id="gotblf0" onclick="markScore('blf0','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missblf0" onclick="markScore('blf0','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardblf1">
+  <p class="qnum">Question 2 of 10</p>
+  <p class="qprompt">Low wing arm — Bong Sau applied lower to cover the mid/low-gate.</p>
+  <div class="btnrow" id="btnrowblf1">
+    <button class="revbtn" onclick="revealAnswer('blf1')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('blf1')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintblf1">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsblf1">
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf1')">Gum Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf1')">Man Geng Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'blf1')">Dai Bong Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansblf1">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Dai Bong Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">低膀手</p>
+  </div>
+  <div class="scorerow" id="scoreblf1">
+    <button class="gotbtn" id="gotblf1" onclick="markScore('blf1','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missblf1" onclick="markScore('blf1','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardblf2">
+  <p class="qnum">Question 3 of 10</p>
+  <p class="qprompt">Circling/rotating hand — changes position while controlling the attacker's arm; removes obstacles to striking.</p>
+  <div class="btnrow" id="btnrowblf2">
+    <button class="revbtn" onclick="revealAnswer('blf2')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('blf2')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintblf2">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsblf2">
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf2')">Gum Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf2')">Jing Jeung</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'blf2')">Huen Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansblf2">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Huen Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">圈手</p>
+  </div>
+  <div class="scorerow" id="scoreblf2">
+    <button class="gotbtn" id="gotblf2" onclick="markScore('blf2','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missblf2" onclick="markScore('blf2','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardblf3">
+  <p class="qnum">Question 4 of 10</p>
+  <p class="qprompt">Inquisitive arm — forms the ready state with Wu Sau; used to gain contact, block or deflect.</p>
+  <div class="btnrow" id="btnrowblf3">
+    <button class="revbtn" onclick="revealAnswer('blf3')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('blf3')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintblf3">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsblf3">
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf3')">Jeung Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf3')">Gaan Sau</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'blf3')">Man Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansblf3">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Man Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">問手</p>
+  </div>
+  <div class="scorerow" id="scoreblf3">
+    <button class="gotbtn" id="gotblf3" onclick="markScore('blf3','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missblf3" onclick="markScore('blf3','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardblf4">
+  <p class="qnum">Question 5 of 10</p>
+  <p class="qprompt">Rotating arms.</p>
+  <div class="btnrow" id="btnrowblf4">
+    <button class="revbtn" onclick="revealAnswer('blf4')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('blf4')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintblf4">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsblf4">
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf4')">Lap Sau</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'blf4')">Dai Jeung</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'blf4')">Kwan Sau</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansblf4">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Kwan Sau</p>
+    <p style="font-size:13px;color:#5f5e5a;margin:3px 0 0 0;">綑手</p>
+  </div>
+  <div class="scorerow" id="scoreblf4">
+    <button class="gotbtn" id="gotblf4" onclick="markScore('blf4','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missblf4" onclick="markScore('blf4','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardbot0">
+  <p class="qnum">Question 6 of 10</p>
+  <p class="qprompt">Eight slash knives</p>
+  <div class="btnrow" id="btnrowbot0">
+    <button class="revbtn" onclick="revealAnswer('bot0')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('bot0')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintbot0">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsbot0">
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot0')">Sao Kuen</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'bot0')">Bat Jam Dao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot0')">Chung Choi</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansbot0">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Bat Jam Dao</p>
+    
+  </div>
+  <div class="scorerow" id="scorebot0">
+    <button class="gotbtn" id="gotbot0" onclick="markScore('bot0','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missbot0" onclick="markScore('bot0','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardbot1">
+  <p class="qnum">Question 7 of 10</p>
+  <p class="qprompt">Upper cut</p>
+  <div class="btnrow" id="btnrowbot1">
+    <button class="revbtn" onclick="revealAnswer('bot1')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('bot1')">Hint / select</button>
+  </div>
+  <div class="hintbox" id="hintbot1">
+    <p class="hintlabel">Which is it?</p>
+    <div class="optrow" id="optsbot1">
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot1')">Lin Wan Gerk</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot1')">Sineng Ma</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'bot1')">Gup Choi</button>
+    </div>
+  </div>
+  <div class="ansbox" id="ansbot1">
+    <p class="anslabel">Answer</p>
+    <p class="ansterm">Gup Choi</p>
+    
+  </div>
+  <div class="scorerow" id="scorebot1">
+    <button class="gotbtn" id="gotbot1" onclick="markScore('bot1','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missbot1" onclick="markScore('bot1','miss')">&#10007; Missed</button>
+  </div>
+</div>
+<div class="qcard" id="cardbot2">
   <p class="qnum">Question 8 of 10</p>
-  <p class="qprompt">Pulling hands</p>
-  <div class="btnrow" id="btnrowot2">
-    <button class="revbtn" onclick="revealAnswer('ot2')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('ot2')">Hint / select</button>
+  <p class="qprompt">Downward elbow</p>
+  <div class="btnrow" id="btnrowbot2">
+    <button class="revbtn" onclick="revealAnswer('bot2')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('bot2')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintot2">
+  <div class="hintbox" id="hintbot2">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optsot2">
-      <button class="optbtn correct" onclick="pickOpt(this,'ot2')">Tok Sao</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot2')">Pak Sao</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot2')">Dui Ma</button>
+    <div class="optrow" id="optsbot2">
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot2')">Si Dai</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'bot2')">Dai Jahng</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot2')">Chung Choi</button>
     </div>
   </div>
-  <div class="ansbox" id="ansot2">
+  <div class="ansbox" id="ansbot2">
     <p class="anslabel">Answer</p>
-    <p class="ansterm">Tok Sao</p>
+    <p class="ansterm">Dai Jahng</p>
     
   </div>
-  <div class="scorerow" id="scoreot2">
-    <button class="gotbtn" id="gotot2" onclick="markScore('ot2','got')">&#10003; Got it</button>
-    <button class="missbtn" id="missot2" onclick="markScore('ot2','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorebot2">
+    <button class="gotbtn" id="gotbot2" onclick="markScore('bot2','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missbot2" onclick="markScore('bot2','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardot3">
+<div class="qcard" id="cardbot3">
   <p class="qnum">Question 9 of 10</p>
-  <p class="qprompt">Retracting waist elbow strike</p>
-  <div class="btnrow" id="btnrowot3">
-    <button class="revbtn" onclick="revealAnswer('ot3')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('ot3')">Hint / select</button>
+  <p class="qprompt">Chain kicks</p>
+  <div class="btnrow" id="btnrowbot3">
+    <button class="revbtn" onclick="revealAnswer('bot3')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('bot3')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintot3">
+  <div class="hintbox" id="hintbot3">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optsot3">
-      <button class="optbtn correct" onclick="pickOpt(this,'ot3')">Sao Jahng</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot3')">Gum Jahng</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot3')">Bil Jee Sao</button>
+    <div class="optrow" id="optsbot3">
+      <button class="optbtn correct" onclick="pickOpt(this,'bot3')">Lin Wan Gerk</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot3')">Fox Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot3')">Dai Jahng</button>
     </div>
   </div>
-  <div class="ansbox" id="ansot3">
+  <div class="ansbox" id="ansbot3">
     <p class="anslabel">Answer</p>
-    <p class="ansterm">Sao Jahng</p>
+    <p class="ansterm">Lin Wan Gerk</p>
     
   </div>
-  <div class="scorerow" id="scoreot3">
-    <button class="gotbtn" id="gotot3" onclick="markScore('ot3','got')">&#10003; Got it</button>
-    <button class="missbtn" id="missot3" onclick="markScore('ot3','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorebot3">
+    <button class="gotbtn" id="gotbot3" onclick="markScore('bot3','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missbot3" onclick="markScore('bot3','miss')">&#10007; Missed</button>
   </div>
 </div>
-<div class="qcard" id="cardot4">
+<div class="qcard" id="cardbot4">
   <p class="qnum">Question 10 of 10</p>
-  <p class="qprompt">Large circle hand</p>
-  <div class="btnrow" id="btnrowot4">
-    <button class="revbtn" onclick="revealAnswer('ot4')">Reveal answer</button>
-    <button class="hintbtn" onclick="showHint('ot4')">Hint / select</button>
+  <p class="qprompt">Jerking hand with strike</p>
+  <div class="btnrow" id="btnrowbot4">
+    <button class="revbtn" onclick="revealAnswer('bot4')">Reveal answer</button>
+    <button class="hintbtn" onclick="showHint('bot4')">Hint / select</button>
   </div>
-  <div class="hintbox" id="hintot4">
+  <div class="hintbox" id="hintbot4">
     <p class="hintlabel">Which is it?</p>
-    <div class="optrow" id="optsot4">
-      <button class="optbtn correct" onclick="pickOpt(this,'ot4')">Lau Sao</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot4')">Jut Sau</button>
-      <button class="optbtn wrong" onclick="pickOpt(this,'ot4')">Jip Sao</button>
+    <div class="optrow" id="optsbot4">
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot4')">Dai Chang Sao</button>
+      <button class="optbtn wrong" onclick="pickOpt(this,'bot4')">Dai Bong</button>
+      <button class="optbtn correct" onclick="pickOpt(this,'bot4')">Jut Dat</button>
     </div>
   </div>
-  <div class="ansbox" id="ansot4">
+  <div class="ansbox" id="ansbot4">
     <p class="anslabel">Answer</p>
-    <p class="ansterm">Lau Sao</p>
+    <p class="ansterm">Jut Dat</p>
     
   </div>
-  <div class="scorerow" id="scoreot4">
-    <button class="gotbtn" id="gotot4" onclick="markScore('ot4','got')">&#10003; Got it</button>
-    <button class="missbtn" id="missot4" onclick="markScore('ot4','miss')">&#10007; Missed</button>
+  <div class="scorerow" id="scorebot4">
+    <button class="gotbtn" id="gotbot4" onclick="markScore('bot4','got')">&#10003; Got it</button>
+    <button class="missbtn" id="missbot4" onclick="markScore('bot4','miss')">&#10007; Missed</button>
   </div>
 </div>
+
+  </div>
 
   <p class="tally" id="tally"></p>
   <p class="footer">Wing Chun daily quiz</p>
@@ -308,6 +582,18 @@ h1 { font-size: 18px; font-weight: 500; }
 
 <script>
 var scores = {};
+
+function setLevel(n) {
+  scores = {};
+  document.getElementById('tally').innerHTML = '';
+  document.getElementById('quiz-l1').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('quiz-l2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('btn-l1').className = 'lvlbtn' + (n === 1 ? ' active' : '');
+  document.getElementById('btn-l2').className = 'lvlbtn' + (n === 2 ? ' active' : '');
+  document.getElementById('subdesc').textContent = n === 1
+    ? '10 techniques — hint/select or reveal answer'
+    : 'Level 2 — wider range of techniques';
+}
 
 function showHint(uid) {
   document.getElementById('btnrow' + uid).style.display = 'none';
@@ -317,9 +603,7 @@ function showHint(uid) {
 function pickOpt(btn, uid) {
   var allBtns = document.getElementById('opts' + uid).querySelectorAll('.optbtn');
   allBtns.forEach(function(b) { b.disabled = true; });
-
   var correct = btn.classList.contains('correct');
-
   if (correct) {
     btn.classList.add('selected-correct');
     autoScore(uid, 'got');
@@ -330,45 +614,31 @@ function pickOpt(btn, uid) {
     });
     autoScore(uid, 'miss');
   }
-
-  // Show answer box after selection
   document.getElementById('ans' + uid).style.display = 'block';
-  // Hide wrong options
   allBtns.forEach(function(b) {
-    if (b.classList.contains('wrong') && !b.classList.contains('selected-wrong')) {
-      b.style.display = 'none';
-    }
+    if (b.classList.contains('wrong') && !b.classList.contains('selected-wrong')) b.style.display = 'none';
   });
-  // Show score row (already auto-marked, but allow override)
-  var scorerow = document.getElementById('score' + uid);
-  scorerow.style.display = 'flex';
+  document.getElementById('score' + uid).style.display = 'flex';
 }
 
 function autoScore(uid, result) {
   scores[uid] = result;
-  var got = document.getElementById('got' + uid);
-  var miss = document.getElementById('miss' + uid);
-  got.className = 'gotbtn' + (result === 'got' ? ' active' : '');
-  miss.className = 'missbtn' + (result === 'miss' ? ' active' : '');
+  document.getElementById('got'  + uid).className = 'gotbtn'  + (result === 'got'  ? ' active' : '');
+  document.getElementById('miss' + uid).className = 'missbtn' + (result === 'miss' ? ' active' : '');
   updateTally();
 }
 
-function markScore(uid, result) {
-  autoScore(uid, result);
-}
+function markScore(uid, result) { autoScore(uid, result); }
 
 function revealAnswer(uid) {
   document.getElementById('btnrow' + uid).style.display = 'none';
-  document.getElementById('ans' + uid).style.display = 'block';
-  var scorerow = document.getElementById('score' + uid);
-  scorerow.style.display = 'flex';
-  // If hint was open, tidy it up
+  document.getElementById('ans'   + uid).style.display = 'block';
+  document.getElementById('score' + uid).style.display = 'flex';
   var opts = document.getElementById('opts' + uid);
   if (opts) {
     opts.querySelectorAll('.wrong').forEach(function(b) { b.style.display = 'none'; });
     opts.querySelectorAll('.correct').forEach(function(b) {
-      b.classList.add('revealed-correct');
-      b.disabled = true;
+      b.classList.add('revealed-correct'); b.disabled = true;
     });
     document.getElementById('hint' + uid).style.display = 'block';
   }
@@ -378,9 +648,8 @@ function updateTally() {
   var vals = Object.values(scores);
   if (!vals.length) return;
   var got = vals.filter(function(v) { return v === 'got'; }).length;
-  var total = vals.length;
-  var msg = 'Score: <strong>' + got + ' / ' + total + '</strong>';
-  if (total === 10) {
+  var msg = 'Score: <strong>' + got + ' / ' + vals.length + '</strong>';
+  if (vals.length === 10) {
     msg += ' &nbsp;—&nbsp; ' + (got === 10 ? 'Perfect!' : got >= 8 ? 'Great work.' : got >= 6 ? 'Good effort.' : 'Keep practising.');
   }
   document.getElementById('tally').innerHTML = msg;
