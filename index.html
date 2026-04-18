@@ -142,11 +142,25 @@ function buildQuiz() {
   var html = '<span class="badge ' + badgeClass + '">' + badgeText + '</span>' +
              '<p class="sechead">Wing Chun techniques — name each one</p>';
 
+  // reverse half: indices 1,3,6,8 (every other, mixed across both sets)
+  var reverseIdx = [1, 3, 6, 8];
+  var lfDescPool = LF.map(function(x){return x[2];});
+  var otDescPool = (currentLevel === 1 ? OL1 : OL2).map(function(x){return x[1];});
   lfPick.forEach(function(q, i) {
-    html += makeCard('lf' + i, i + 1, q[2], q[0], q[1], lfPool);
+    var num = i + 1;
+    if (reverseIdx.indexOf(num) !== -1) {
+      html += makeCard('lf' + i, num, q[0], q[2], null, lfDescPool);
+    } else {
+      html += makeCard('lf' + i, num, q[2], q[0], q[1], lfPool);
+    }
   });
   otPick.forEach(function(q, i) {
-    html += makeCard('ot' + i, i + 6, q[1], q[0], null, otPool);
+    var num = i + 6;
+    if (reverseIdx.indexOf(num) !== -1) {
+      html += makeCard('ot' + i, num, q[0], q[1], null, otDescPool);
+    } else {
+      html += makeCard('ot' + i, num, q[1], q[0], null, otPool);
+    }
   });
 
   document.getElementById('quiz').innerHTML = html;
