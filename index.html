@@ -34,10 +34,6 @@ h1{font-size:18px;font-weight:500}
 .optbtn:hover:not([disabled]){background:#f1efe8}
 .opt-correct{background:#e1f5ee;border-color:#5dcaa5;color:#0f6e56;font-weight:600}
 .opt-wrong{background:#faece7;border-color:#f0997b;color:#993c1d;text-decoration:line-through}
-.ansbox{display:none;margin-top:12px;padding:10px 14px;border-radius:8px;border-left:3px solid #1d9e75;background:#f0faf6}
-.anslabel{font-size:11px;font-weight:600;color:#0f6e56;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
-.ansterm{font-size:15px;font-weight:600;color:#1a1a18}
-.anschinese{font-size:13px;color:#5f5e5a;margin-top:3px}
 .scorerow{display:none;gap:8px;margin-top:10px}
 .gotbtn,.missbtn{font-size:12px;border-radius:8px;padding:5px 12px;cursor:pointer;border:1px solid #b4b2a9;background:transparent;color:#5f5e5a}
 .gotbtn.active{background:#e1f5ee;color:#0f6e56;border-color:#5dcaa5;font-weight:600}
@@ -45,6 +41,8 @@ h1{font-size:18px;font-weight:500}
 .tally{font-size:14px;color:#5f5e5a;text-align:center;margin-top:1.25rem;min-height:1.4rem}
 .tally strong{color:#1a1a18;font-size:16px}
 .footer{font-size:11px;color:#b4b2a9;text-align:center;margin-top:1.5rem;padding-bottom:2rem}
+.resetbtn{font-size:11px;color:#b4b2a9;background:none;border:none;cursor:pointer;text-decoration:underline;margin-top:6px;display:block;margin-left:auto;margin-right:auto}
+.resetbtn:hover{color:#5f5e5a}
 </style>
 </head>
 <body>
@@ -65,6 +63,7 @@ h1{font-size:18px;font-weight:500}
   <div id="quiz"></div>
   <p class="tally" id="tally"></p>
   <p class="footer">Wing Chun daily quiz</p>
+  <button class="resetbtn" id="resetbtn">Reset progress</button>
 </div>
 
 <script>
@@ -75,14 +74,62 @@ var OL2  = OL1.concat(OL2X);
 
 var currentLevel = 1;
 var scores = {};
+var STORAGE_KEY = 'wcProgress';
 
+// ── Progress tracking ────────────────────────────────────────────────────────
+// progress[term] = { streak: N, total: N }  (streak = consecutive correct)
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function saveProgress(p) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); } catch(e) {}
+}
+function recordResult(term, got) {
+  var p = loadProgress();
+  if (!p[term]) p[term] = { streak: 0, total: 0 };
+  p[term].total++;
+  p[term].streak = got ? p[term].streak + 1 : 0;
+  saveProgress(p);
+}
+
+// Weight: no history or just missed = 2, streak 1-2 = 1.5, streak 3-4 = 1, streak 5+ = 0.5
+function getWeight(term) {
+  var p = loadProgress();
+  if (!p[term] || p[term].streak === 0) return 2;
+  var s = p[term].streak;
+  if (s >= 5) return 0.5;
+  if (s >= 3) return 1;
+  return 1.5;
+}
+
+// Weighted random sample without replacement
+function weightedSample(arr, keyFn, n) {
+  var pool = arr.map(function(x) { return { item: x, w: getWeight(keyFn(x)) }; });
+  var result = [];
+  for (var i = 0; i < n && pool.length > 0; i++) {
+    var total = pool.reduce(function(s, x) { return s + x.w; }, 0);
+    var r = Math.random() * total;
+    var cum = 0;
+    var idx = 0;
+    for (var j = 0; j < pool.length; j++) {
+      cum += pool[j].w;
+      if (r <= cum) { idx = j; break; }
+    }
+    result.push(pool[idx].item);
+    pool.splice(idx, 1);
+  }
+  return result;
+}
+
+// ── Quiz building ────────────────────────────────────────────────────────────
 function rnd(arr, n) {
   var a = arr.slice();
-  for (var i = a.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  for (var i = a.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
   }
-  return a.slice(0, n);
+  return a.slice(0,n);
 }
 
 function distractors(correct, pool, n) {
@@ -90,39 +137,32 @@ function distractors(correct, pool, n) {
   return rnd(opts, n);
 }
 
-function makeCard(uid, num, prompt, answer, chinese, pool) {
+function makeCard(uid, num, prompt, answer, termKey, pool) {
   var d = distractors(answer, pool, 2);
   var opts = d.concat([answer]);
-  // shuffle opts
-  for (var i = opts.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
+  for (var i = opts.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var t = opts[i]; opts[i] = opts[j]; opts[j] = t;
   }
-  var chineseHTML = chinese ? '<p class="anschinese">' + chinese + '</p>' : '';
   var optHTML = '';
   opts.forEach(function(opt) {
     var cls = opt === answer ? 'correct' : 'wrong';
-    optHTML += '<button class="optbtn ' + cls + '" data-uid="' + uid + '">' + opt + '</button>';
+    optHTML += '<button class="optbtn ' + cls + '" data-uid="' + uid + '" data-term="' + termKey + '">' + opt + '</button>';
   });
   return '<div class="qcard" id="card' + uid + '">' +
     '<p class="qnum">Question ' + num + ' of 10</p>' +
     '<p class="qprompt">' + prompt + '</p>' +
     '<div class="btnrow" id="btnrow' + uid + '">' +
-      '<button class="revbtn" data-uid="' + uid + '">Reveal answer</button>' +
+      '<button class="revbtn" data-uid="' + uid + '" data-term="' + termKey + '">Reveal answer</button>' +
       '<button class="hintbtn" data-uid="' + uid + '">Hint / select</button>' +
     '</div>' +
     '<div class="hintbox" id="hint' + uid + '">' +
       '<p class="hintlabel">Which is it?</p>' +
       '<div class="optrow" id="opts' + uid + '">' + optHTML + '</div>' +
     '</div>' +
-    '<div class="ansbox" id="ans' + uid + '">' +
-      '<p class="anslabel">Answer</p>' +
-      '<p class="ansterm">' + answer + '</p>' +
-      chineseHTML +
-    '</div>' +
     '<div class="scorerow" id="score' + uid + '">' +
-      '<button class="gotbtn" data-uid="' + uid + '" data-result="got">&#10003; Got it</button>' +
-      '<button class="missbtn" data-uid="' + uid + '" data-result="miss">&#10007; Missed</button>' +
+      '<button class="gotbtn" data-uid="' + uid + '" data-term="' + termKey + '" data-result="got">&#10003; Got it</button>' +
+      '<button class="missbtn" data-uid="' + uid + '" data-term="' + termKey + '" data-result="miss">&#10007; Missed</button>' +
     '</div>' +
   '</div>';
 }
@@ -131,35 +171,35 @@ function buildQuiz() {
   scores = {};
   document.getElementById('tally').innerHTML = '';
 
-  var lfPool  = LF.map(function(x) { return x[0]; });
-  var otPool  = currentLevel === 1 ? OL1.map(function(x) { return x[0]; }) : OL2.map(function(x) { return x[0]; });
-  var lfPick  = rnd(LF, 5);
-  var otSrc   = currentLevel === 1 ? OL1 : OL2;
-  var otPick  = rnd(otSrc, 5);
+  var lfPool   = LF.map(function(x) { return x[0]; });
+  var otSrc    = currentLevel === 1 ? OL1 : OL2;
+  var otPool   = otSrc.map(function(x) { return x[0]; });
+  var lfDescPool = LF.map(function(x) { return x[2]; });
+  var otDescPool = otSrc.map(function(x) { return x[1]; });
 
+  var lfPick = weightedSample(LF, function(x) { return x[0]; }, 5);
+  var otPick = weightedSample(otSrc, function(x) { return x[0]; }, 5);
+
+  var reverseIdx = [1, 3, 6, 8];
   var badgeClass = currentLevel === 1 ? 'badge-l1' : 'badge-l2';
   var badgeText  = currentLevel === 1 ? 'Level 1' : 'Level 2';
   var html = '<span class="badge ' + badgeClass + '">' + badgeText + '</span>' +
              '<p class="sechead">Wing Chun techniques — name each one</p>';
 
-  // reverse half: indices 1,3,6,8 (every other, mixed across both sets)
-  var reverseIdx = [1, 3, 6, 8];
-  var lfDescPool = LF.map(function(x){return x[2];});
-  var otDescPool = (currentLevel === 1 ? OL1 : OL2).map(function(x){return x[1];});
   lfPick.forEach(function(q, i) {
     var num = i + 1;
     if (reverseIdx.indexOf(num) !== -1) {
-      html += makeCard('lf' + i, num, q[0], q[2], null, lfDescPool);
+      html += makeCard('lf'+i, num, q[0], q[2], q[0], lfDescPool);
     } else {
-      html += makeCard('lf' + i, num, q[2], q[0], q[1], lfPool);
+      html += makeCard('lf'+i, num, q[2], q[0], q[0], lfPool);
     }
   });
   otPick.forEach(function(q, i) {
     var num = i + 6;
     if (reverseIdx.indexOf(num) !== -1) {
-      html += makeCard('ot' + i, num, q[0], q[1], null, otDescPool);
+      html += makeCard('ot'+i, num, q[0], q[1], q[0], otDescPool);
     } else {
-      html += makeCard('ot' + i, num, q[1], q[0], null, otPool);
+      html += makeCard('ot'+i, num, q[1], q[0], q[0], otPool);
     }
   });
 
@@ -168,69 +208,73 @@ function buildQuiz() {
 }
 
 function attachListeners() {
-  // hint buttons
   document.querySelectorAll('.hintbtn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var uid = this.getAttribute('data-uid');
-      document.getElementById('btnrow' + uid).style.display = 'none';
-      document.getElementById('hint' + uid).style.display = 'block';
+      document.getElementById('btnrow'+uid).style.display = 'none';
+      document.getElementById('hint'+uid).style.display = 'block';
     });
   });
 
-  // reveal buttons
   document.querySelectorAll('.revbtn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      var uid = this.getAttribute('data-uid');
-      revealAnswer(uid);
+      var uid  = this.getAttribute('data-uid');
+      var term = this.getAttribute('data-term');
+      revealAnswer(uid, term);
     });
   });
 
-  // option buttons
   document.querySelectorAll('.optbtn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      var uid = this.getAttribute('data-uid');
-      var allBtns = document.getElementById('opts' + uid).querySelectorAll('.optbtn');
+      var uid  = this.getAttribute('data-uid');
+      var term = this.getAttribute('data-term');
+      var allBtns = document.getElementById('opts'+uid).querySelectorAll('.optbtn');
       allBtns.forEach(function(b) { b.disabled = true; });
       var correct = this.classList.contains('correct');
       if (correct) {
         this.classList.add('opt-correct');
-        autoScore(uid, 'got');
+        autoScore(uid, term, 'got');
       } else {
         this.classList.add('opt-wrong');
         allBtns.forEach(function(b) { if (b.classList.contains('correct')) b.classList.add('opt-correct'); });
-        autoScore(uid, 'miss');
+        autoScore(uid, term, 'miss');
       }
       allBtns.forEach(function(b) {
         if (b.classList.contains('wrong') && !b.classList.contains('opt-wrong')) b.style.display = 'none';
       });
-      document.getElementById('score' + uid).style.display = 'flex';
+      document.getElementById('score'+uid).style.display = 'flex';
     });
   });
 
-  // score buttons
   document.querySelectorAll('.gotbtn, .missbtn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var uid    = this.getAttribute('data-uid');
+      var term   = this.getAttribute('data-term');
       var result = this.getAttribute('data-result');
-      autoScore(uid, result);
+      autoScore(uid, term, result);
     });
   });
 }
 
-function revealAnswer(uid) {
-  document.getElementById('btnrow' + uid).style.display = 'none';
-  document.getElementById('score' + uid).style.display = 'flex';
-  var opts = document.getElementById('opts' + uid);
+function revealAnswer(uid, term) {
+  document.getElementById('btnrow'+uid).style.display = 'none';
+  document.getElementById('score'+uid).style.display = 'flex';
+  var opts = document.getElementById('opts'+uid);
   if (opts) {
     opts.querySelectorAll('.wrong').forEach(function(b) { b.style.display = 'none'; });
     opts.querySelectorAll('.correct').forEach(function(b) { b.classList.add('opt-correct'); b.disabled = true; });
-    document.getElementById('hint' + uid).style.display = 'block';
+    document.getElementById('hint'+uid).style.display = 'block';
   }
 }
 
-function autoScore(uid, result) {
-  scores[uid] = result;
-  var card = document.getElementById('card' + uid);
+function autoScore(uid, term, result) {
+  if (!scores[uid]) {
+    scores[uid] = result;
+    recordResult(term, result === 'got');
+  } else {
+    scores[uid] = result;
+  }
+  var card = document.getElementById('card'+uid);
   card.querySelectorAll('.gotbtn').forEach(function(b) {
     b.className = 'gotbtn' + (result === 'got' ? ' active' : '');
   });
@@ -264,6 +308,12 @@ function setLevel(n) {
 document.getElementById('newbtn').addEventListener('click', function() { buildQuiz(); });
 document.getElementById('btn-l1').addEventListener('click', function() { setLevel(1); });
 document.getElementById('btn-l2').addEventListener('click', function() { setLevel(2); });
+document.getElementById('resetbtn').addEventListener('click', function() {
+  if (confirm('Reset all progress? This will clear your weighting history.')) {
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    buildQuiz();
+  }
+});
 
 buildQuiz();
 </script>
